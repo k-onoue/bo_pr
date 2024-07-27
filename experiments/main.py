@@ -38,14 +38,29 @@ if __name__ == "__main__":
     last_arg = sys.argv[4] if len(sys.argv) > 4 else None
     output_path = os.path.join(exp_dir, label, f"{str(seed).zfill(4)}_{label}.pt")
 
+    # # Debugging information
+    # print(f'current_dir: {current_dir}')
+    # print(f'exp_dir: {exp_dir}')
+    # print(f'config_path: {config_path}')
+    # print(f'output_path: {output_path}')
+
+    print(f'label: {label}')
+
     if not os.path.exists(os.path.dirname(output_path)):
         try:
             os.makedirs(os.path.dirname(output_path))
         except OSError as exc:  # Guard against race condition
             if exc.errno != errno.EEXIST:
                 raise
+
+    # Check if config_path is actually a file
+    if not os.path.isfile(config_path):
+        raise FileNotFoundError(f"Config file not found: {config_path}")
+
     with open(config_path, "r") as f:
         kwargs = json.load(f)
+
+    print(f'kwargs: {kwargs}')
     save_callback = lambda data: torch.save(data, output_path)
     save_frequency = 5
     fetch_data(kwargs=kwargs)
